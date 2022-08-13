@@ -6,8 +6,29 @@ import { useState } from 'react';
 
 export default function Contact() {
 
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  console.log(errors)
 
-
+  const submitFunction = async(formData, e) =>{ 
+    let axios_config = {
+        method: 'post',
+        url: '/api/contact',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        data: formData,
+    };
+    
+    try {
+      const response = await axios(axios_config);
+      if (response.status==200) {
+          e.target.reset();
+          alert("Message sent!");
+        }
+    } catch (err) {
+        console.error(err);
+    }   
+ }
 
 
 
@@ -24,13 +45,15 @@ export default function Contact() {
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Contact me!</h2>
           
           </div>
-          <form className="mt-8 space-y-6">
+          <form onSubmit={handleSubmit(submitFunction)} className="mt-8 space-y-6">
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
                 <label className="sr-only">
                   Name
                 </label>
                 <input
+                  {...register("name", {required:'Name is required' ,minLength: {value: 4, message: 'Name must be at least 4 characters'}})}
+
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Name"
                   id="name"
@@ -42,6 +65,8 @@ export default function Contact() {
                   Email
                 </label>
                 <input
+                  {...register("email", {required:'Email is required'})}
+
                   className="rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Email"
                   id="email"
@@ -53,6 +78,7 @@ export default function Contact() {
                   Message
                 </label>
                  <textarea
+                  {...register("message", {required:'Message is required', minLength: {value: 10, message: 'Message must be at least 10 characters'}})}
                   className="rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Message"
                    id="message"
